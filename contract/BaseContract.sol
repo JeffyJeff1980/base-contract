@@ -24,9 +24,16 @@ contract BaseContract is IBaseContract, ERC721, ERC721Enumerable, Pausable, Owna
     uint256 public _discountMintPrice = 0;
     uint256 public _maxSupply = 0;
     uint256 public _maxMintAmount = 0;
-    bool public _isPaused;
     
     constructor() ERC721("BaseContract", "BASE") {}
+
+    function pause() public onlyOwner {
+        _pause();
+    }
+
+    function unpause() public onlyOwner {
+        _unpause();
+    }
 
     function _beforeTokenTransfer(address from, address to, uint256 tokenId, uint256 batchSize)
         internal
@@ -37,7 +44,6 @@ contract BaseContract is IBaseContract, ERC721, ERC721Enumerable, Pausable, Owna
     }
 
     // The following functions are overrides required by Solidity.
-
     function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
         super._burn(tokenId);
     }
@@ -75,10 +81,6 @@ contract BaseContract is IBaseContract, ERC721, ERC721Enumerable, Pausable, Owna
 
     function setMaxMintAmount(uint256 newMaxMintAmount) public onlyOwner {
         _maxMintAmount = newMaxMintAmount;
-    }
-
-    function setIsPaused(bool state) public onlyOwner {
-        _isPaused = state;
     }
 
     function withdraw() public onlyOwner {
