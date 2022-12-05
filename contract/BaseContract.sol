@@ -27,14 +27,7 @@ contract BaseContract is IBaseContract, ERC721, ERC721Enumerable, Pausable, Owna
     
     constructor() ERC721("BaseContract", "BASE") {}
 
-    function pause() public onlyOwner {
-        _pause();
-    }
-
-    function unpause() public onlyOwner {
-        _unpause();
-    }
-
+    // The following functions are overrides required by Solidity.
     function _beforeTokenTransfer(address from, address to, uint256 tokenId, uint256 batchSize)
         internal
         whenNotPaused
@@ -43,7 +36,6 @@ contract BaseContract is IBaseContract, ERC721, ERC721Enumerable, Pausable, Owna
         super._beforeTokenTransfer(from, to, tokenId, batchSize);
     }
 
-    // The following functions are overrides required by Solidity.
     function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
         super._burn(tokenId);
     }
@@ -66,11 +58,20 @@ contract BaseContract is IBaseContract, ERC721, ERC721Enumerable, Pausable, Owna
         return super.supportsInterface(interfaceId);
     }
 
+    // Don't allow owner to renounce ownership of this smart contract
     function renounceOwnership() public pure override {
         revert("Can't renouce ownership of this smart contract.");
     }
 
      // Only Owner Functions
+    function pause() public onlyOwner {
+        _pause();
+    }
+
+    function unpause() public onlyOwner {
+        _unpause();
+    }
+
     function setBaseURI(string memory newBaseTokenURI) public onlyOwner {
         _baseTokenURI = newBaseTokenURI;
     }
