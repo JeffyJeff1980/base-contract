@@ -17,9 +17,9 @@ contract BaseContract is IBaseContract, ERC721, ERC721Enumerable, Pausable, Owna
     using Counters for Counters.Counter;
     using SafeMath for uint256;
 
-    Counters.Counter private _tokenIdCounter;
+    Counters.Counter public _tokenIdCounter;
 
-    string private _baseTokenURI;
+    string public _baseTokenURI;
     uint256 public _mintPrice = 0;
     uint256 public _discountMintPrice = 0;
     uint256 public _maxSupply = 0;
