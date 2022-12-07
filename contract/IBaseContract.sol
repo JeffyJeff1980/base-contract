@@ -4,7 +4,6 @@
 pragma solidity ^0.8.9;
 
 interface IBaseContract {
-  function safeMint(address to) external;
   function _baseURI() external view returns (string memory);
   function _burn(uint256 tokenId) external;
   function _beforeTokenTransfer(address from, address to, uint256 tokenId, uint256 batchSize) external;
