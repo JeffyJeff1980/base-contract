@@ -16,7 +16,7 @@ ERC721, ERC721Enumerable, Pausable, Ownable, ERC721Burnable
 ```solidity
 // SPDX-License-Identifier: MIT
 
-import "./IBaseContract.sol";
+import "./BaseContract.sol";
 
 pragma solidity ^0.8.9;
 
