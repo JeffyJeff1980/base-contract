@@ -8,7 +8,7 @@ Very easy to use, basically all that you have to do is to inherit from BaseContr
 
 By default, this will inherit from:
 ```
-ERC721, ERC721Enumerable, Pausable, Ownable, ERC721Burnable
+ERC721, ERC721URIStorage, ERC721Enumerable, Pausable, Ownable, ERC721Burnable
 ```
 
 ## Example
