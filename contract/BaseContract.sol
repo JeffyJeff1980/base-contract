@@ -6,18 +6,21 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
+import "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/draft-ERC721Votes.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "./IBaseContract.sol";
 
-contract BaseContract is IBaseContract, ERC721, ERC721Enumerable, Pausable, Ownable, ERC721Burnable {
+contract BaseContract is IBaseContract, ERC721, ERC721Enumerable, ERC721URIStorage, Pausable, Ownable, ERC721Burnable, EIP712, ERC721Votes {
     using Counters for Counters.Counter;
     using SafeMath for uint256;
 
-    Counters.Counter public _tokenIdCounter;
+    Counters.Counter private _tokenIdCounter;
 
     string public _baseTokenURI;
     uint256 public _mintPrice = 0;
@@ -25,22 +28,31 @@ contract BaseContract is IBaseContract, ERC721, ERC721Enumerable, Pausable, Owna
     uint256 public _maxSupply = 0;
     uint256 public _maxMintAmount = 0;
     
-    constructor() ERC721("BaseContract", "BASE") {}
+    constructor() ERC721("MyToken", "MTK") EIP712("MyToken", "1") {}
 
-    function safeMint(address to, string memory uri) public onlyOwner {
-        uint256 tokenId = _tokenIdCounter.current();
-        _tokenIdCounter.increment();
-        _safeMint(to, tokenId);
-        _setTokenURI(tokenId, uri);
+    function pause() public onlyOwner {
+        _pause();
     }
 
-    // The following functions are overrides required by Solidity.
+    function unpause() public onlyOwner {
+        _unpause();
+    }
+
     function _beforeTokenTransfer(address from, address to, uint256 tokenId, uint256 batchSize)
         internal
         whenNotPaused
         override(ERC721, ERC721Enumerable)
     {
         super._beforeTokenTransfer(from, to, tokenId, batchSize);
+    }
+
+    // The following functions are overrides required by Solidity.
+
+    function _afterTokenTransfer(address from, address to, uint256 tokenId, uint256 batchSize)
+        internal
+        override(ERC721, ERC721Votes)
+    {
+        super._afterTokenTransfer(from, to, tokenId, batchSize);
     }
 
     function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
@@ -64,33 +76,7 @@ contract BaseContract is IBaseContract, ERC721, ERC721Enumerable, Pausable, Owna
     {
         return super.supportsInterface(interfaceId);
     }
-
-    // Don't allow owner to renounce ownership of this smart contract
-    function renounceOwnership() public pure override {
-        revert("Can't renouce ownership of this smart contract.");
-    }
-
-     // Only Owner Functions
-    function pause() public onlyOwner {
-        _pause();
-    }
-
-    function unpause() public onlyOwner {
-        _unpause();
-    }
-
-    function setBaseURI(string memory newBaseTokenURI) public onlyOwner {
-        _baseTokenURI = newBaseTokenURI;
-    }
-
-    function setMintPrice(uint256 newMintPrice) public onlyOwner {
-        _mintPrice = newMintPrice;
-    }
-
-    function setMaxMintAmount(uint256 newMaxMintAmount) public onlyOwner {
-        _maxMintAmount = newMaxMintAmount;
-    }
-
+}
     function withdraw() public onlyOwner {
         uint256 balance = address(this).balance;
         require(balance > 0, "No ether left to withdraw");
