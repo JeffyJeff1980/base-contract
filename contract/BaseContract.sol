@@ -14,21 +14,16 @@ import "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/draft-ERC721Votes.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "./IBaseContract.sol";
 
-contract BaseContract is IBaseContract, ERC721, ERC721Enumerable, ERC721URIStorage, Pausable, Ownable, ERC721Burnable, EIP712, ERC721Votes {
+contract BaseContract is ERC721, ERC721Enumerable, ERC721URIStorage, Pausable, Ownable, ERC721Burnable, EIP712, ERC721Votes {
     using Counters for Counters.Counter;
     using SafeMath for uint256;
 
     Counters.Counter private _tokenIdCounter;
 
-    string public _baseTokenURI;
-    uint256 public _mintPrice = 0;
-    uint256 public _discountMintPrice = 0;
-    uint256 public _maxSupply = 0;
-    uint256 public _maxMintAmount = 0;
-    
-    constructor() ERC721("MyToken", "MTK") EIP712("MyToken", "1") {}
+    constructor() ERC721("MyToken", "MTK") EIP712("MyToken", "1") {
+        _tokenIdCounter.increment();
+    }
 
     function pause() public onlyOwner {
         _pause();
@@ -76,7 +71,7 @@ contract BaseContract is IBaseContract, ERC721, ERC721Enumerable, ERC721URIStora
     {
         return super.supportsInterface(interfaceId);
     }
-}
+
     function withdraw() public onlyOwner {
         uint256 balance = address(this).balance;
         require(balance > 0, "No ether left to withdraw");
