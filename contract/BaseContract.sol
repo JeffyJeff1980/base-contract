@@ -33,6 +33,11 @@ contract BaseContract is ERC721, ERC721Enumerable, ERC721URIStorage, Pausable, O
         _unpause();
     }
 
+    // 
+    function isApprovedForAll(address _owner, address _operator) public override view returns (bool) {
+        return super.isApprovedForAll(_owner, _operator);
+    }
+
     function _beforeTokenTransfer(address from, address to, uint256 tokenId, uint256 batchSize)
         internal
         whenNotPaused
